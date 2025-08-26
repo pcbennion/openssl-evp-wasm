@@ -1,0 +1,5 @@
+.vscode
+build
+test/public
+
+CMakeUserPresets.json
