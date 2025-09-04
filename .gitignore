@@ -1,5 +1,5 @@
 .vscode
 build
-test/public
+test/node_modules
 
 CMakeUserPresets.json

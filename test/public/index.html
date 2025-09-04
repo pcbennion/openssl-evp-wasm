@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenSSL EVP WASM Test Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    .row { display: flex; align-items: center; margin-bottom: 1em; }
+    .row label { min-width: 180px; }
+    .row input, .row select, .row textarea { margin-right: 1em; }
+    .output { width: 400px; height: 2em; }
+    .input { width: 200px; }
+    button { margin-right: 1em; }
+    h1 { margin-bottom: 2em; }
+  </style>
+</head>
+<body>
+  <h1>OpenSSL EVP WASM Test Page</h1>
+
+  <!-- Symmetric Keygen -->
+  <div class="row">
+    <label for="sym-keylen">Symmetric Keygen (AES):</label>
+    <input id="sym-keylen" class="input" type="number" placeholder="Key Length (bits)" value="256">
+    <button onclick="generateSymKey()">Generate</button>
+    <button onclick="copyToClipboard('sym-key-output')">Copy</button>
+    <textarea id="sym-key-output" class="output" readonly></textarea>
+  </div>
+
+  <!-- Asymmetric Keygen -->
+  <div class="row">
+    <label for="asym-alg">Asymmetric Keygen:</label>
+    <select id="asym-alg">
+      <option value="RSA">RSA</option>
+    </select>
+    <button onclick="generateAsymKey()">Generate</button>
+    <button onclick="copyToClipboard('asym-key-output')">Copy</button>
+    <textarea id="asym-key-output" class="output" readonly></textarea>
+  </div>
+
+  <!-- Encapsulate -->
+  <div class="row">
+    <label for="encap-input">Encapsulate:</label>
+    <input id="encap-input" class="input" type="text" placeholder="Public Key">
+    <button onclick="pasteFromClipboard('encap-input')">Paste</button>
+    <button onclick="encapsulate()">Encapsulate</button>
+    <button onclick="copyToClipboard('encap-output')">Copy</button>
+    <textarea id="encap-output" class="output" readonly></textarea>
+  </div>
+
+  <!-- Decapsulate -->
+  <div class="row">
+    <label for="decap-input">Decapsulate:</label>
+    <input id="decap-input" class="input" type="text" placeholder="Private Key, Ciphertext">
+    <button onclick="pasteFromClipboard('decap-input')">Paste</button>
+    <button onclick="decapsulate()">Decapsulate</button>
+    <button onclick="copyToClipboard('decap-output')">Copy</button>
+    <textarea id="decap-output" class="output" readonly></textarea>
+  </div>
+
+  <!-- Encrypt -->
+  <div class="row">
+    <label for="encrypt-input">Encrypt (AES):</label>
+    <input id="encrypt-input" class="input" type="text" placeholder="Key, IV, Plaintext">
+    <select id="encrypt-alg">
+      <option value="AES">AES</option>
+    </select>
+    <button onclick="pasteFromClipboard('encrypt-input')">Paste</button>
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="copyToClipboard('encrypt-output')">Copy</button>
+    <textarea id="encrypt-output" class="output" readonly></textarea>
+  </div>
+
+  <!-- Decrypt -->
+  <div class="row">
+    <label for="decrypt-input">Decrypt (AES):</label>
+    <input id="decrypt-input" class="input" type="text" placeholder="Key, IV, Ciphertext">
+    <select id="decrypt-alg">
+      <option value="AES">AES</option>
+    </select>
+    <button onclick="pasteFromClipboard('decrypt-input')">Paste</button>
+    <button onclick="decrypt()">Decrypt</button>
+    <button onclick="copyToClipboard('decrypt-output')">Copy</button>
+    <textarea id="decrypt-output" class="output" readonly></textarea>
+  </div>
+
+  <script src="bundle.js"></script>
+  <script>
+    let evp;
+    window.onload = async function() {
+      evp = new window.OpensslEVP();
+      await evp.load('openssl_wasm');
+    };
+    function copyToClipboard(id) {
+      const el = document.getElementById(id);
+      el.select();
+      document.execCommand('copy');
+    }
+    function pasteFromClipboard(id) {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById(id).value = text;
+      });
+    }
+
+    function generateSymKey() {
+      const keyLen = parseInt(document.getElementById('sym-keylen').value, 32);
+      evp.generateSymmetricKey("AES", keyLen).then(key => {
+        document.getElementById('sym-key-output').value = key;
+      }).catch(err => {
+        document.getElementById('sym-key-output').value = 'Error: ' + err;
+      });
+    }
+    function generateAsymKey() {
+      document.getElementById('asym-key-output').value = 'TODO: Call WASM asymmetric keygen';
+    }
+    function encapsulate() {
+      document.getElementById('encap-output').value = 'TODO: Call WASM encapsulate';
+    }
+    function decapsulate() {
+      document.getElementById('decap-output').value = 'TODO: Call WASM decapsulate';
+    }
+    function encrypt() {
+      document.getElementById('encrypt-output').value = 'TODO: Call WASM encrypt';
+    }
+    function decrypt() {
+      document.getElementById('decrypt-output').value = 'TODO: Call WASM decrypt';
+    }
+  </script>
+</body>
+</html>
