@@ -15,7 +15,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 find_package(OpenSSL MODULE REQUIRED)
 
 
-add_executable(${WASM_TARGET} wasm.cpp)
+file(GLOB WASM_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+add_executable(${WASM_TARGET} ${WASM_SOURCES})
 target_include_directories(${WASM_TARGET} PRIVATE
     ${OpenSSL_INCLUDE_DIRS})
 target_link_libraries(${WASM_TARGET} PRIVATE openssl::openssl)

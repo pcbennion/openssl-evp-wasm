@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './openssl_wasm.ts',
+  entry: './opensslts',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),

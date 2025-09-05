@@ -8,5 +8,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["./openssl_wasm.ts"]
+  "include": ["openssl.ts"]
 }
