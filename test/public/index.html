@@ -15,80 +15,191 @@
   </style>
 </head>
 <body>
-  <h1>OpenSSL EVP WASM Test Page</h1>
+  <!-- <h1>OpenSSL EVP WASM Test Page</h1> -->
 
   <!-- Symmetric Keygen -->
-  <div class="row">
-    <label for="sym-keylen">Symmetric Keygen (AES):</label>
-    <input id="sym-keylen" class="input" type="number" placeholder="Key Length (bits)" value="256">
-    <button onclick="generateSymKey()">Generate</button>
-    <button onclick="copyToClipboard('sym-key-output')">Copy</button>
-    <textarea id="sym-key-output" class="output" readonly></textarea>
+  <label for="sym-keylen" style="width: 240px; display: block; margin-bottom: 0.5em;">Symmetric Keygen (AES):</label>
+  <div class="row" style="margin-bottom: 1em;">
+    <div style="display: flex; align-items: center; width: 100%;">
+      <div style="flex: 1; display: flex; align-items: center;">
+        <label for="sym-keylen" style="min-width: 120px; font-size: 12pt;">Key Length (bits):</label>
+        <input id="sym-keylen" class="input" type="number" placeholder="Key Length (bits)" value="256">
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <button onclick="generateSymKey()">Generate</button>
+      </div>
+      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
+        <label for="sym-key-output" style="min-width: 120px; font-size: 12pt;">Key (Base 64):</label>
+        <textarea id="sym-key-output" class="output" readonly></textarea>
+        <button onclick="copyToClipboard('sym-key-output')">Copy</button>
+      </div>
+    </div>
   </div>
 
   <!-- Asymmetric Keygen -->
-  <div class="row">
-    <label for="asym-alg">Asymmetric Keygen:</label>
-    <select id="asym-alg">
-      <option value="RSA">RSA</option>
-    </select>
-    <button onclick="generateAsymKey()">Generate</button>
-    <button onclick="copyToClipboard('asym-key-output')">Copy</button>
-    <textarea id="asym-key-output" class="output" readonly></textarea>
+  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Asymmetric Keygen</label>
+  <div class="row" style="margin-bottom: 1em;">
+    <div style="display: flex; align-items: center; width: 100%;">
+      <div style="flex: 1; display: flex; align-items: center;">
+        <label for="asym-alg" style="min-width: 120px; font-size: 12pt;">Algorithm:</label>
+        <select id="asym-alg">
+          <option value="RSA">RSA</option>
+        </select>
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <button onclick="generateAsymKey()">Generate</button>
+      </div>
+      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+            <label for="asym-key-private" style="min-width: 180px; font-size: 12pt;">Private Key (Base64):</label>
+            <textarea id="asym-key-private" class="output" readonly></textarea>
+            <button onclick="copyToClipboard('asym-key-private')">Copy</button>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <label for="asym-key-public" style="min-width: 180px; font-size: 12pt; text-align: right;">Public Key (Base64):</label>
+            <textarea id="asym-key-public" class="output" readonly></textarea>
+            <button onclick="copyToClipboard('asym-key-public')">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Encapsulate -->
-  <div class="row">
-    <label for="encap-input">Encapsulate:</label>
-    <input id="encap-input" class="input" type="text" placeholder="Public Key">
-    <button onclick="pasteFromClipboard('encap-input')">Paste</button>
-    <button onclick="encapsulate()">Encapsulate</button>
-    <button onclick="copyToClipboard('encap-output')">Copy</button>
-    <textarea id="encap-output" class="output" readonly></textarea>
+  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Encapsulate</label>
+  <div class="row" style="margin-bottom: 1em;">
+    <div style="display: flex; align-items: center; width: 100%;">
+      <div style="flex: 1; display: flex; align-items: center;">
+        <label for="encap-input" style="min-width: 120px; font-size: 12pt;">Public Key (Base 64):</label>
+        <input id="encap-input" class="input" type="text" placeholder="Public Key">
+        <button onclick="pasteFromClipboard('encap-input')">Paste</button>
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <button onclick="encapsulate()">Encapsulate</button>
+      </div>
+      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+            <label for="encap-output-cipher" style="min-width: 180px; font-size: 12pt;">Ciphertext (Base64):</label>
+            <textarea id="encap-output-cipher" class="output" readonly></textarea>
+            <button onclick="copyToClipboard('encap-output-cipher')">Copy</button>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <label for="encap-output-secret" style="min-width: 180px; font-size: 12pt; text-align: right;">Shared Secret (Base64):</label>
+            <textarea id="encap-output-secret" class="output" readonly></textarea>
+            <button onclick="copyToClipboard('encap-output-secret')">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Decapsulate -->
-  <div class="row">
-    <label for="decap-input">Decapsulate:</label>
-    <input id="decap-input" class="input" type="text" placeholder="Private Key, Ciphertext">
-    <button onclick="pasteFromClipboard('decap-input')">Paste</button>
-    <button onclick="decapsulate()">Decapsulate</button>
-    <button onclick="copyToClipboard('decap-output')">Copy</button>
-    <textarea id="decap-output" class="output" readonly></textarea>
+  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Decapsulate</label>
+  <div class="row" style="margin-bottom: 1em;">
+    <div style="display: flex; align-items: center; width: 100%;">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+          <label for="decap-input-key" style="min-width: 120px; font-size: 12pt;">Private Key:</label>
+          <input id="decap-input-key" class="input" type="text" placeholder="Private Key">
+          <button onclick="pasteFromClipboard('decap-input-key')">Paste</button>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <label for="decap-input-cipher" style="min-width: 120px; font-size: 12pt;">Ciphertext:</label>
+          <input id="decap-input-cipher" class="input" type="text" placeholder="Ciphertext">
+          <button onclick="pasteFromClipboard('decap-input-cipher')">Paste</button>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <button onclick="decapsulate()">Decapsulate</button>
+      </div>
+      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
+        <label for="decap-output" style="min-width: 120px; font-size: 12pt;">Shared Secret (Base 64):</label>
+        <textarea id="decap-output" class="output" readonly></textarea>
+        <button onclick="copyToClipboard('decap-output')">Copy</button>
+      </div>
+    </div>
   </div>
 
   <!-- Encrypt -->
-  <div class="row">
-    <label for="encrypt-input">Encrypt (AES):</label>
-    <input id="encrypt-input" class="input" type="text" placeholder="Key, IV, Plaintext">
-    <select id="encrypt-alg">
-      <option value="AES">AES</option>
-    </select>
-    <button onclick="pasteFromClipboard('encrypt-input')">Paste</button>
-    <button onclick="encrypt()">Encrypt</button>
-    <button onclick="copyToClipboard('encrypt-output')">Copy</button>
-    <textarea id="encrypt-output" class="output" readonly></textarea>
+  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Encrypt</label>
+  <div class="row" style="margin-bottom: 1em;">
+    <div style="display: flex; align-items: center; width: 100%;">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+          <label for="encrypt-input-key" style="min-width: 120px; font-size: 12pt;">Key:</label>
+          <input id="encrypt-input-key" class="input" type="text" placeholder="Key">
+          <button onclick="pasteFromClipboard('encrypt-input-key')">Paste</button>
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+          <label for="encrypt-input-iv" style="min-width: 120px; font-size: 12pt;">IV:</label>
+          <input id="encrypt-input-iv" class="input" type="text" placeholder="IV">
+          <button onclick="pasteFromClipboard('encrypt-input-iv')">Paste</button>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <label for="encrypt-input-plain" style="min-width: 120px; font-size: 12pt;">Plaintext:</label>
+          <input id="encrypt-input-plain" class="input" type="text" placeholder="Plaintext">
+          <button onclick="pasteFromClipboard('encrypt-input-plain')">Paste</button>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        <select id="encrypt-alg" style="margin-right: 1em;">
+          <option value="AES">AES</option>
+        </select>
+        <button onclick="encrypt()">Encrypt</button>
+      </div>
+      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
+        <label for="encrypt-output" style="min-width: 120px; font-size: 12pt;">Ciphertext (Base 64):</label>
+        <textarea id="encrypt-output" class="output" readonly></textarea>
+        <button onclick="copyToClipboard('encrypt-output')">Copy</button>
+      </div>
+    </div>
   </div>
 
   <!-- Decrypt -->
-  <div class="row">
-    <label for="decrypt-input">Decrypt (AES):</label>
-    <input id="decrypt-input" class="input" type="text" placeholder="Key, IV, Ciphertext">
-    <select id="decrypt-alg">
-      <option value="AES">AES</option>
-    </select>
-    <button onclick="pasteFromClipboard('decrypt-input')">Paste</button>
-    <button onclick="decrypt()">Decrypt</button>
-    <button onclick="copyToClipboard('decrypt-output')">Copy</button>
-    <textarea id="decrypt-output" class="output" readonly></textarea>
+  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Decrypt</label>
+  <div class="row" style="margin-bottom: 1em;">
+    <div style="display: flex; align-items: center; width: 100%;">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+          <label for="decrypt-input-key" style="min-width: 120px; font-size: 12pt;">Key:</label>
+          <input id="decrypt-input-key" class="input" type="text" placeholder="Key">
+          <button onclick="pasteFromClipboard('decrypt-input-key')">Paste</button>
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
+          <label for="decrypt-input-iv" style="min-width: 120px; font-size: 12pt;">IV:</label>
+          <input id="decrypt-input-iv" class="input" type="text" placeholder="IV">
+          <button onclick="pasteFromClipboard('decrypt-input-iv')">Paste</button>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <label for="decrypt-input-cipher" style="min-width: 120px; font-size: 12pt;">Ciphertext:</label>
+          <input id="decrypt-input-cipher" class="input" type="text" placeholder="Ciphertext">
+          <button onclick="pasteFromClipboard('decrypt-input-cipher')">Paste</button>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        <select id="decrypt-alg" style="margin-right: 1em;">
+          <option value="AES">AES</option>
+        </select>
+        <button onclick="decrypt()">Decrypt</button>
+      </div>
+      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
+        <label for="decrypt-output" style="min-width: 120px; font-size: 12pt;">Plaintext (Base 64):</label>
+        <textarea id="decrypt-output" class="output" readonly></textarea>
+        <button onclick="copyToClipboard('decrypt-output')">Copy</button>
+      </div>
+    </div>
   </div>
 
   <script src="bundle.js"></script>
   <script>
     let evp;
     window.onload = async function() {
+      const wasmFactory = await import('./openssl_wasm.js');
+      const wasm = await wasmFactory.default();
       evp = new window.OpensslEVP();
-      await evp.load('openssl_wasm');
+      await evp.load(wasm);
     };
     function copyToClipboard(id) {
       const el = document.getElementById(id);
@@ -102,18 +213,30 @@
     }
 
     function generateSymKey() {
-      const keyLen = parseInt(document.getElementById('sym-keylen').value, 32);
-      evp.generateSymmetricKey("AES", keyLen).then(key => {
-        document.getElementById('sym-key-output').value = key;
-      }).catch(err => {
+      const keyLen = parseInt(document.getElementById('sym-keylen').value) / 8;
+      try {
+        const retval = evp.generateSymmetricKey("AES", keyLen);
+        document.getElementById('sym-key-output').value = btoa(String.fromCharCode(...retval));
+      } catch(err) {
         document.getElementById('sym-key-output').value = 'Error: ' + err;
-      });
+      }
     }
     function generateAsymKey() {
-      document.getElementById('asym-key-output').value = 'TODO: Call WASM asymmetric keygen';
+      const alg = document.getElementById('asym-alg').value;
+      try {
+        const retval = evp.generateAsymmetricKeyPair(alg);
+        console.log(retval);
+        const {privateKey, publicKey} = retval;
+        document.getElementById('asym-key-private').value = btoa(String.fromCharCode(...privateKey));
+        document.getElementById('asym-key-public').value = btoa(String.fromCharCode(...publicKey));
+      } catch(err) {
+        document.getElementById('asym-key-private').value = 'Error: ' + err;
+        document.getElementById('asym-key-public').value = '';
+      }
     }
     function encapsulate() {
-      document.getElementById('encap-output').value = 'TODO: Call WASM encapsulate';
+      document.getElementById('encap-output-cipher').value = 'TODO: Call WASM encapsulate';
+      document.getElementById('encap-output-secret').value = 'TODO: Call WASM encapsulate';
     }
     function decapsulate() {
       document.getElementById('decap-output').value = 'TODO: Call WASM decapsulate';

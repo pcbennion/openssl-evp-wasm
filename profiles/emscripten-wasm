@@ -1,0 +1,14 @@
+[settings]
+os=Emscripten
+arch=wasm
+compiler=clang
+compiler.version=14
+compiler.cppstd=17
+build_type=Release
+
+[tool_requires]
+emsdk/3.1.50
+
+[buildenv]
+CFLAGS=-fexceptions
+CXXFLAGS=-fexceptions

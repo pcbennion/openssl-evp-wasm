@@ -4,9 +4,10 @@ module.exports = {
   entry: './openssl_wasm.ts',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'test/public'),
+    path: path.resolve(__dirname, 'public'),
     library: 'OpensslEVP',
     libraryTarget: 'window',
+    libraryExport: 'default'
   },
   resolve: {
     extensions: ['.ts', '.js'],

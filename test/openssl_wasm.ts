@@ -1,4 +1,6 @@
-export interface IOpensslEVP {
+import Module from "module";
+
+interface IOpensslEVP {
   // Asymmetric key generation (RSA, ECC, ML-KEM, etc.)
   generateAsymmetricKeyPair(algorithm: string): {
     publicKey: Uint8Array;
@@ -23,13 +25,11 @@ export interface IOpensslEVP {
   getSupportedAlgorithms(): string[];
 }
 
-export class OpensslEVP implements IOpensslEVP {
+export default class OpensslEVP implements IOpensslEVP {
   private bindings: any;
   constructor() {}
-  async load(wasmPath: string) {
-    // Emscripten-generated WASM modules typically export a factory function
-    // that returns a promise resolving to the module instance
-    this.bindings = await (window as any)[wasmPath]();
+  async load(bindings: any) {
+    this.bindings = bindings;
   }
 
   generateAsymmetricKeyPair(algorithm: string) {
