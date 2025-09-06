@@ -19,7 +19,7 @@ KeygenOutput keygen(std::string algorithm) {
 
     std::vector<uint8_t> publicKey(publicKeyLength);
     std::vector<uint8_t> privateKey(privateKeyLength);
-    EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new_id(cipherData.pkeyType, nullptr);
+    EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new_from_name(nullptr, algorithm.c_str(), nullptr);
     if (!pctx) {
         throw std::runtime_error("Failed to create PKEY context");
     }
@@ -62,7 +62,7 @@ EncapOutput encapsulate(std::string algorithm, emscripten::val publicKey) {
     std::vector<uint8_t> ciphertext(ciphertextLength);
     std::vector<uint8_t> sharedSecret(secretLength);
 
-    EVP_PKEY* peerkey = EVP_PKEY_new_raw_public_key(cipherData.pkeyType, nullptr, publicKeyVec.data(), publicKeyLength);
+    EVP_PKEY* peerkey = EVP_PKEY_new_raw_public_key_ex(nullptr, algorithm.c_str(), nullptr, publicKeyVec.data(), publicKeyLength);
     if (!peerkey) {
         throw std::runtime_error("Failed to import public key");
     }
@@ -107,7 +107,7 @@ emscripten::val decapsulate(std::string algorithm, emscripten::val privateKey, e
     }
     std::vector<uint8_t> sharedSecret(secretLength);
 
-    EVP_PKEY* privkey = EVP_PKEY_new_raw_private_key(cipherData.pkeyType, nullptr, privateKeyVec.data(), privateKeyLength);
+    EVP_PKEY* privkey = EVP_PKEY_new_raw_private_key_ex(nullptr, algorithm.c_str(), nullptr, privateKeyVec.data(), privateKeyLength);
     if (!privkey) {
         throw std::runtime_error("Failed to create private key");
     }

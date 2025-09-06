@@ -4,13 +4,13 @@
 #include <map>
 #include <stdexcept>
 #include <openssl/evp.h>
+#include <openssl/core_names.h>
 #include <openssl/rand.h>
 #include <emscripten/val.h>
 
 namespace evp::pqc {
 
 struct CipherData {
-    int pkeyType;
     size_t publicKeyLength;
     size_t privateKeyLength;
     size_t ciphertextLength;
@@ -18,9 +18,9 @@ struct CipherData {
 };
 
 const std::map<std::string, CipherData> SupportedCiphers = {
-    {"KYBER512",   {EVP_PKEY_KYBER512, 800, 1632, 32}},
-    {"KYBER768",   {EVP_PKEY_KYBER768, 1184, 2400, 32}},
-    {"KYBER1024",  {EVP_PKEY_KYBER1024, 1568, 3168, 32}},
+    {"ML-KEM-512",   {800, 1632, 768, 32}},
+    {"ML-KEM-768",   {1184, 2400, 1088, 32}},
+    {"ML-KEM-1024",  {1568, 3168, 1568, 32}},
 };
 
 struct KeygenOutput {
