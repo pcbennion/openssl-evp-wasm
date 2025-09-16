@@ -1,13 +1,13 @@
 const path = require('path');
 
 module.exports = {
-  entry: './opensslts',
+  entry: './openssl.ts',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
     library: 'OpensslEVP',
     libraryTarget: 'window',
-    libraryExport: 'default'
+    libraryExport: 'OpensslEVP'
   },
   resolve: {
     extensions: ['.ts', '.js'],

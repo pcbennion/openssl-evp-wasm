@@ -17,190 +17,131 @@
 <body>
   <!-- <h1>OpenSSL EVP WASM Test Page</h1> -->
 
-  <!-- Symmetric Keygen -->
-  <label for="sym-keylen" style="width: 240px; display: block; margin-bottom: 0.5em;">Symmetric Keygen (AES):</label>
-  <div class="row" style="margin-bottom: 1em;">
-    <div style="display: flex; align-items: center; width: 100%;">
-      <div style="flex: 1; display: flex; align-items: center;">
-        <label for="sym-keylen" style="min-width: 120px; font-size: 12pt;">Key Length (bits):</label>
-        <input id="sym-keylen" class="input" type="number" placeholder="Key Length (bits)" value="256">
-      </div>
-      <div style="flex: 1; display: flex; justify-content: center;">
-        <button onclick="generateSymKey()">Generate</button>
-      </div>
-      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
-        <label for="sym-key-output" style="min-width: 120px; font-size: 12pt;">Key (Base 64):</label>
-        <textarea id="sym-key-output" class="output" readonly></textarea>
-        <button onclick="copyToClipboard('sym-key-output')">Copy</button>
-      </div>
-    </div>
+  <!-- Generate Bytes -->
+  <h3>Generate Random Bytes</h3>
+  <div class="row">
+    <label for="gen-len">Length:</label>
+    <input type="number" id="gen-len" class="input" value="32" />
+    <button onclick="generateBytes()">Generate</button>
+    <label for="gen-output">Output:</label>
+    <textarea id="gen-output" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('gen-output')">Copy</button>
   </div>
 
-  <!-- Asymmetric Keygen -->
-  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Asymmetric Keygen</label>
-  <div class="row" style="margin-bottom: 1em;">
-    <div style="display: flex; align-items: center; width: 100%;">
-      <div style="flex: 1; display: flex; align-items: center;">
-        <label for="asym-alg" style="min-width: 120px; font-size: 12pt;">Algorithm:</label>
-        <select id="asym-alg">
-          <option value="RSA">RSA</option>
-        </select>
-      </div>
-      <div style="flex: 1; display: flex; justify-content: center;">
-        <button onclick="generateAsymKey()">Generate</button>
-      </div>
-      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
-        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-          <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-            <label for="asym-key-private" style="min-width: 180px; font-size: 12pt;">Private Key (Base64):</label>
-            <textarea id="asym-key-private" class="output" readonly></textarea>
-            <button onclick="copyToClipboard('asym-key-private')">Copy</button>
-          </div>
-          <div style="display: flex; align-items: center;">
-            <label for="asym-key-public" style="min-width: 180px; font-size: 12pt; text-align: right;">Public Key (Base64):</label>
-            <textarea id="asym-key-public" class="output" readonly></textarea>
-            <button onclick="copyToClipboard('asym-key-public')">Copy</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Symmetric EVP -->
+  <h3>Symmetric Encryption/Decryption</h3>
+  <div class="row">
+    <label for="sym-alg">Algorithm:</label>
+    <select id="sym-alg" class="input"></select>
+    <label for="sym-key">Key (Base64):</label>
+    <input type="text" id="sym-key" class="input" />
+    <button onclick="pasteFromClipboard('sym-key')">Paste</button>
+    <label for="sym-iv">IV (Base64):</label>
+    <input type="text" id="sym-iv" class="input" />
+    <button onclick="pasteFromClipboard('sym-iv')">Paste</button>
+    <label for="sym-aad">AAD (Base64):</label>
+    <input type="text" id="sym-aad" class="input" />
+    <button onclick="pasteFromClipboard('sym-aad')">Paste</button>
+  </div>
+  <h4>Encryption</h4>
+  <div class="row">
+    <label for="sym-enc-input">Plaintext:</label>
+    <input type="text" id="sym-enc-input" class="input" />
+    <button onclick="symEncrypt()">Encrypt</button>
+    <label for="sym-enc-output">Ciphertext:</label>
+    <textarea id="sym-enc-output" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('sym-enc-output')">Copy</button>
+    <label for="sym-enc-tag">Tag:</label>
+    <textarea id="sym-enc-tag" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('sym-enc-tag')">Copy</button>
+  </div>
+  <h4>Decryption</h4>
+  <div class="row">
+    <label for="sym-dec-input">Ciphertext:</label>
+    <input type="text" id="sym-dec-input" class="input" />
+    <button onclick="pasteFromClipboard('sym-dec-input')">Paste</button>
+    <label for="sym-dec-tag">Tag:</label>
+    <input type="text" id="sym-dec-tag" class="input" />
+    <button onclick="pasteFromClipboard('sym-dec-tag')">Paste</button>
+    <button onclick="symDecrypt()">Decrypt</button>
+    <label for="sym-dec-output">Plaintext:</label>
+    <textarea id="sym-dec-output" class="output" readonly></textarea>
   </div>
 
-  <!-- Encapsulate -->
-  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Encapsulate</label>
-  <div class="row" style="margin-bottom: 1em;">
-    <div style="display: flex; align-items: center; width: 100%;">
-      <div style="flex: 1; display: flex; align-items: center;">
-        <label for="encap-input" style="min-width: 120px; font-size: 12pt;">Public Key (Base 64):</label>
-        <input id="encap-input" class="input" type="text" placeholder="Public Key">
-        <button onclick="pasteFromClipboard('encap-input')">Paste</button>
-      </div>
-      <div style="flex: 1; display: flex; justify-content: center;">
-        <button onclick="encapsulate()">Encapsulate</button>
-      </div>
-      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
-        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-          <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-            <label for="encap-output-cipher" style="min-width: 180px; font-size: 12pt;">Ciphertext (Base64):</label>
-            <textarea id="encap-output-cipher" class="output" readonly></textarea>
-            <button onclick="copyToClipboard('encap-output-cipher')">Copy</button>
-          </div>
-          <div style="display: flex; align-items: center;">
-            <label for="encap-output-secret" style="min-width: 180px; font-size: 12pt; text-align: right;">Shared Secret (Base64):</label>
-            <textarea id="encap-output-secret" class="output" readonly></textarea>
-            <button onclick="copyToClipboard('encap-output-secret')">Copy</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- PQC EVP -->
+  <h3>Post-Quantum Cryptography (PQC) Key Encapsulation</h3>
+  <div class="row">
+    <label for="pqc-alg">Algorithm:</label>
+    <select id="pqc-alg" class="input"></select>
   </div>
-
-  <!-- Decapsulate -->
-  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Decapsulate</label>
-  <div class="row" style="margin-bottom: 1em;">
-    <div style="display: flex; align-items: center; width: 100%;">
-      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
-        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-          <label for="decap-input-key" style="min-width: 120px; font-size: 12pt;">Private Key:</label>
-          <input id="decap-input-key" class="input" type="text" placeholder="Private Key">
-          <button onclick="pasteFromClipboard('decap-input-key')">Paste</button>
-        </div>
-        <div style="display: flex; align-items: center;">
-          <label for="decap-input-cipher" style="min-width: 120px; font-size: 12pt;">Ciphertext:</label>
-          <input id="decap-input-cipher" class="input" type="text" placeholder="Ciphertext">
-          <button onclick="pasteFromClipboard('decap-input-cipher')">Paste</button>
-        </div>
-      </div>
-      <div style="flex: 1; display: flex; justify-content: center;">
-        <button onclick="decapsulate()">Decapsulate</button>
-      </div>
-      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
-        <label for="decap-output" style="min-width: 120px; font-size: 12pt;">Shared Secret (Base 64):</label>
-        <textarea id="decap-output" class="output" readonly></textarea>
-        <button onclick="copyToClipboard('decap-output')">Copy</button>
-      </div>
-    </div>
+  <h4>Key Generation</h4>
+  <div class="row">
+    <button onclick="pqcKeygen()">Generate Key Pair</button>
+    <label for="pqc-keygen-pubkey">Public Key:</label>
+    <textarea id="pqc-keygen-pubkey" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('pqc-keygen-pubkey')">Copy</button>
+    <label for="pqc-keygen-privkey">Private Key:</label>
+    <textarea id="pqc-keygen-privkey" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('pqc-keygen-privkey')">Copy</button>
   </div>
-
-  <!-- Encrypt -->
-  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Encrypt</label>
-  <div class="row" style="margin-bottom: 1em;">
-    <div style="display: flex; align-items: center; width: 100%;">
-      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
-        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-          <label for="encrypt-input-key" style="min-width: 120px; font-size: 12pt;">Key:</label>
-          <input id="encrypt-input-key" class="input" type="text" placeholder="Key">
-          <button onclick="pasteFromClipboard('encrypt-input-key')">Paste</button>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-          <label for="encrypt-input-iv" style="min-width: 120px; font-size: 12pt;">IV:</label>
-          <input id="encrypt-input-iv" class="input" type="text" placeholder="IV">
-          <button onclick="pasteFromClipboard('encrypt-input-iv')">Paste</button>
-        </div>
-        <div style="display: flex; align-items: center;">
-          <label for="encrypt-input-plain" style="min-width: 120px; font-size: 12pt;">Plaintext:</label>
-          <input id="encrypt-input-plain" class="input" type="text" placeholder="Plaintext">
-          <button onclick="pasteFromClipboard('encrypt-input-plain')">Paste</button>
-        </div>
-      </div>
-      <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-        <select id="encrypt-alg" style="margin-right: 1em;">
-          <option value="AES">AES</option>
-        </select>
-        <button onclick="encrypt()">Encrypt</button>
-      </div>
-      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
-        <label for="encrypt-output" style="min-width: 120px; font-size: 12pt;">Ciphertext (Base 64):</label>
-        <textarea id="encrypt-output" class="output" readonly></textarea>
-        <button onclick="copyToClipboard('encrypt-output')">Copy</button>
-      </div>
-    </div>
+  <h4>Encapsulation</h4>
+  <div class="row">
+    <label for="pqc-encaps-pubkey">Public Key:</label>
+    <input type="text" id="pqc-encaps-pubkey" class="input" />
+    <button onclick="pasteFromClipboard('pqc-encaps-pubkey')">Paste</button>
+    <button onclick="pqcEncap()">Encapsulate</button>
+    <label for="pqc-encaps-ciphertext">Ciphertext:</label>
+    <textarea id="pqc-encaps-ciphertext" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('pqc-encaps-ciphertext')">Copy</button>
+    <label for="pqc-encaps-secret">Shared Secret:</label>
+    <textarea id="pqc-encaps-secret" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('pqc-encaps-secret')">Copy</button>
   </div>
-
-  <!-- Decrypt -->
-  <label style="width: 240px; display: block; margin-top: 1em; margin-bottom: 0.5em;">Decrypt</label>
-  <div class="row" style="margin-bottom: 1em;">
-    <div style="display: flex; align-items: center; width: 100%;">
-      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
-        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-          <label for="decrypt-input-key" style="min-width: 120px; font-size: 12pt;">Key:</label>
-          <input id="decrypt-input-key" class="input" type="text" placeholder="Key">
-          <button onclick="pasteFromClipboard('decrypt-input-key')">Paste</button>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.5em;">
-          <label for="decrypt-input-iv" style="min-width: 120px; font-size: 12pt;">IV:</label>
-          <input id="decrypt-input-iv" class="input" type="text" placeholder="IV">
-          <button onclick="pasteFromClipboard('decrypt-input-iv')">Paste</button>
-        </div>
-        <div style="display: flex; align-items: center;">
-          <label for="decrypt-input-cipher" style="min-width: 120px; font-size: 12pt;">Ciphertext:</label>
-          <input id="decrypt-input-cipher" class="input" type="text" placeholder="Ciphertext">
-          <button onclick="pasteFromClipboard('decrypt-input-cipher')">Paste</button>
-        </div>
-      </div>
-      <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-        <select id="decrypt-alg" style="margin-right: 1em;">
-          <option value="AES">AES</option>
-        </select>
-        <button onclick="decrypt()">Decrypt</button>
-      </div>
-      <div style="flex: 2; display: flex; align-items: center; justify-content: flex-end;">
-        <label for="decrypt-output" style="min-width: 120px; font-size: 12pt;">Plaintext (Base 64):</label>
-        <textarea id="decrypt-output" class="output" readonly></textarea>
-        <button onclick="copyToClipboard('decrypt-output')">Copy</button>
-      </div>
-    </div>
+  <h4>Decapsulation</h4>
+  <div class="row">
+    <label for="pqc-decaps-privkey">Private Key:</label>
+    <input type="text" id="pqc-decaps-privkey" class="input" />
+    <button onclick="pasteFromClipboard('pqc-decaps-privkey')">Paste</button>
+    <label for="pqc-decaps-ciphertext">Ciphertext:</label>
+    <input type="text" id="pqc-decaps-ciphertext" class="input" />
+    <button onclick="pasteFromClipboard('pqc-decaps-ciphertext')">Paste</button>
+    <button onclick="pqcDecap()">Decapsulate</button>
+    <label for="pqc-decaps-secret">Shared Secret:</label>
+    <textarea id="pqc-decaps-secret" class="output" readonly></textarea>
+    <button onclick="copyToClipboard('pqc-decaps-secret')">Copy</button>
   </div>
 
   <script src="bundle.js"></script>
   <script>
     let evp;
     window.onload = async function() {
-      const wasmFactory = await import('./openssl_wasm.js');
-      const wasm = await wasmFactory.default();
-      evp = new window.OpensslEVP();
-      await evp.load(wasm);
-    };
+      const factory = await import('./openssl_wasm.js');
+      const wasm = await factory.default();
+      evp = new window.OpensslEVP(wasm);
+
+      // Populate sym-alg combo box
+      const symAlgSelect = document.getElementById('sym-alg');
+      const algs = evp.symmetric.algorithms();
+      symAlgSelect.innerHTML = '';
+      algs.forEach(alg => {
+        const opt = document.createElement('option');
+        opt.value = alg;
+        opt.textContent = alg;
+        symAlgSelect.appendChild(opt);
+      });
+
+      // Populate pqc-alg combo box
+      const pqcAlgSelect = document.getElementById('pqc-alg');
+      const pqcAlgs = evp.pqc.algorithms();
+      pqcAlgSelect.innerHTML = '';
+      pqcAlgs.forEach(alg => {
+        const opt = document.createElement('option');
+        opt.value = alg;
+        opt.textContent = alg;
+        pqcAlgSelect.appendChild(opt);
+      });
+    }
+
     function copyToClipboard(id) {
       const el = document.getElementById(id);
       el.select();
@@ -211,41 +152,84 @@
         document.getElementById(id).value = text;
       });
     }
-
-    function generateSymKey() {
-      const keyLen = parseInt(document.getElementById('sym-keylen').value) / 8;
+    function b64ToArray(str) {
+      return Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+    }
+    function arrayToB64(bytes) {
+      return btoa(String.fromCharCode(...bytes));
+    }
+    async function generateBytesHelper(numBytes) {
       try {
-        const retval = evp.generateSymmetricKey("AES", keyLen);
-        document.getElementById('sym-key-output').value = btoa(String.fromCharCode(...retval));
+        const retval = await evp.generateRandomBytes(numBytes);
+        return arrayToB64(retval);
       } catch(err) {
-        document.getElementById('sym-key-output').value = 'Error: ' + err;
+        return 'Error: ' + err;
       }
     }
-    function generateAsymKey() {
-      const alg = document.getElementById('asym-alg').value;
+    async function generateBytes() {
+      const numBytes = parseInt(document.getElementById('gen-len').value);
+      document.getElementById('gen-output').value = await generateBytesHelper(numBytes);
+    }
+    async function symEncrypt() {
+      const alg = document.getElementById('sym-alg').value;
+      const key = b64ToArray(document.getElementById('sym-key').value);
+      const iv = b64ToArray(document.getElementById('sym-iv').value);
+      const aad = b64ToArray(document.getElementById('sym-aad').value);
+      const plaintextString = document.getElementById('sym-enc-input').value;
+      const plaintext = new TextEncoder().encode(plaintextString);
       try {
-        const retval = evp.generateAsymmetricKeyPair(alg);
-        console.log(retval);
-        const {privateKey, publicKey} = retval;
-        document.getElementById('asym-key-private').value = btoa(String.fromCharCode(...privateKey));
-        document.getElementById('asym-key-public').value = btoa(String.fromCharCode(...publicKey));
+        const { ciphertext, tag } = await evp.symmetric.encrypt(alg, { key, iv, aad }, plaintext);
+        document.getElementById('sym-enc-output').value = arrayToB64(ciphertext);
+        document.getElementById('sym-enc-tag').value = arrayToB64(tag);
       } catch(err) {
-        document.getElementById('asym-key-private').value = 'Error: ' + err;
-        document.getElementById('asym-key-public').value = '';
+        document.getElementById('sym-enc-output').value = 'Error: ' + err;
       }
     }
-    function encapsulate() {
-      document.getElementById('encap-output-cipher').value = 'TODO: Call WASM encapsulate';
-      document.getElementById('encap-output-secret').value = 'TODO: Call WASM encapsulate';
+    async function symDecrypt() {
+      const alg = document.getElementById('sym-alg').value;
+      const key = b64ToArray(document.getElementById('sym-key').value);
+      const iv = b64ToArray(document.getElementById('sym-iv').value);
+      const aad = b64ToArray(document.getElementById('sym-aad').value);
+      const tag = b64ToArray(document.getElementById('sym-dec-tag').value);
+      const ciphertext = b64ToArray(document.getElementById('sym-dec-input').value);
+      try {
+        const plaintext = await evp.symmetric.decrypt(alg, { key, iv, aad, tag }, ciphertext);
+        document.getElementById('sym-dec-output').value = String.fromCharCode(...plaintext);
+      } catch(err) {
+        document.getElementById('sym-dec-output').value = 'Error: ' + err;
+      }
     }
-    function decapsulate() {
-      document.getElementById('decap-output').value = 'TODO: Call WASM decapsulate';
+    async function pqcKeygen() {
+      const alg = document.getElementById('pqc-alg').value;
+      try {
+        const { publicKey, privateKey } = await evp.pqc.keygen(alg);
+        document.getElementById('pqc-keygen-pubkey').value = arrayToB64(publicKey);
+        document.getElementById('pqc-keygen-privkey').value = arrayToB64(privateKey);
+      } catch(err) {
+        document.getElementById('pqc-keygen-pubkey').value = 'Error: ' + err;
+      }
     }
-    function encrypt() {
-      document.getElementById('encrypt-output').value = 'TODO: Call WASM encrypt';
+    async function pqcEncap() {
+      const alg = document.getElementById('pqc-alg').value;
+      const pubkey = b64ToArray(document.getElementById('pqc-encaps-pubkey').value);
+      try {
+        const { ciphertext, sharedSecret } = await evp.pqc.encapsulate(alg, pubkey);
+        document.getElementById('pqc-encaps-ciphertext').value = arrayToB64(ciphertext);
+        document.getElementById('pqc-encaps-secret').value = arrayToB64(sharedSecret);
+      } catch(err) {
+        document.getElementById('pqc-encaps-ciphertext').value = 'Error: ' + err;
+      }
     }
-    function decrypt() {
-      document.getElementById('decrypt-output').value = 'TODO: Call WASM decrypt';
+    async function pqcDecap() {
+      const alg = document.getElementById('pqc-alg').value;
+      const privkey = b64ToArray(document.getElementById('pqc-decaps-privkey').value);
+      const ciphertext = b64ToArray(document.getElementById('pqc-decaps-ciphertext').value);
+      try {
+        const sharedSecret = await evp.pqc.decapsulate(alg, privkey, ciphertext);
+        document.getElementById('pqc-decaps-secret').value = arrayToB64(sharedSecret);
+      } catch(err) {
+        document.getElementById('pqc-decaps-secret').value = 'Error: ' + err;
+      }
     }
   </script>
 </body>

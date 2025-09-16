@@ -9,7 +9,14 @@ static CipherData getCipherData(std::string algorithm) {
 }
 
 static std::vector<uint8_t> vectorFromArray(const emscripten::val& arr) {
-    return arr.isArray() ? emscripten::vecFromJSArray<uint8_t>(arr) : std::vector<uint8_t>();
+    if (arr.isArray() || arr.instanceof(emscripten::val::global("Uint8Array"))) {
+        return emscripten::vecFromJSArray<uint8_t>(arr);
+    }
+    if (arr.instanceof(emscripten::val::global("ArrayBuffer"))) {
+        emscripten::val uint8View = emscripten::val::global("Uint8Array").new_(arr);
+        return emscripten::vecFromJSArray<uint8_t>(uint8View);
+    }
+    return std::vector<uint8_t>();
 }
 
 KeygenOutput keygen(std::string algorithm) {
