@@ -41,11 +41,22 @@ interface OpensslWasmBindings {
     pqcDecapsulate: (algorithm: string, privateKey: Uint8Array, ciphertext: Uint8Array) => Uint8Array;
     pqcAlgorithms: () => string[];
 }
+interface WasmModule {
+    bind: () => Promise<OpensslWasmBindings>;
+}
 
 export class OpensslEVP implements IOpensslEVP {
+    private _bindings: OpensslWasmBindings | undefined;
+    private get bindings(): OpensslWasmBindings {
+        if (!this._bindings) {
+            throw new Error('WASM bindings not initialized');
+        }
+        return this._bindings;
+    }
+
     symmetric: IOpensslEVP['symmetric'];
     pqc: IOpensslEVP['pqc'];
-    constructor(private bindings: OpensslWasmBindings) {
+    constructor() {
         this.symmetric = {
             keygen: (algorithm: string) => {
                 return new Promise((resolve, reject) => {
@@ -116,6 +127,11 @@ export class OpensslEVP implements IOpensslEVP {
                 return this.bindings.pqcAlgorithms();
             },
         };
+    }
+
+    async initialize(module: WasmModule) {
+        this._bindings = await module.bind();
+        return this;
     }
 
     async generateRandomBytes(numBytes: number): Promise<Uint8Array> {

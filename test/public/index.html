@@ -115,9 +115,7 @@
   <script>
     let evp;
     window.onload = async function() {
-      const factory = await import('./openssl_wasm.js');
-      const wasm = await factory.default();
-      evp = new window.OpensslEVP(wasm);
+      evp = await new window.OpensslEVP().initialize(await import('./openssl_wasm.js'));
 
       // Populate sym-alg combo box
       const symAlgSelect = document.getElementById('sym-alg');
