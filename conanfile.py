@@ -20,16 +20,15 @@ class OpensslEvpWasm(ConanFile):
 
     def set_version(self):
         # If no version has been set, set it to the current git branch name
-        # git = Git(self, self.recipe_folder)
-        # branch = git.run("rev-parse --abbrev-ref HEAD")
-        branch = "main"
+        git = Git(self, self.recipe_folder)
+        branch = git.run("rev-parse --abbrev-ref HEAD")
         self.version = self.version or branch
 
     def configure(self):
         pass
 
     def requirements(self):
-        self.requires("openssl/3.5.0")
+        self.requires("openssl/3.5.2")
 
     def build_requirements(self):
         self.build_requires("emsdk/3.1.50")
@@ -44,11 +43,9 @@ class OpensslEvpWasm(ConanFile):
         deps.generate()
 
     def source(self):
-        if self.in_local_cache:
-            return
         conandata_sources = self.conan_data.get("sources", {}).get(self.version, {})
         if not conandata_sources:
-            raise ConanInvalidConfiguration("In-cache builds are only supported for stable versions.")
+            raise ConanInvalidConfiguration("In-cache builds are only supported for released versions.")
         get(self, **conandata_sources)
 
     def build(self):
