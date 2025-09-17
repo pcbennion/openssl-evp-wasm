@@ -46,7 +46,7 @@ class OpensslEvpWasm(ConanFile):
         conandata_sources = self.conan_data.get("sources", {}).get(self.version, {})
         if not conandata_sources:
             raise ConanInvalidConfiguration("In-cache builds are only supported for released versions.")
-        get(self, **conandata_sources)
+        get(self, **conandata_sources, strip_root=True)
 
     def build(self):
         cmake = CMake(self)
