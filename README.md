@@ -28,7 +28,7 @@ The `conanfile.py` recipe can be exported to self-hosted conan indexes for autom
 The bindings can be instantiated as follows:
 ```javascript
 const wasmModule = await import('./openssl_wasm.js');
-const evp = await wasmModule.bind();
+const evp = await wasmModule.default();
 ```
 The wasm interface is synchronous and has the following spec:
 ```typescript

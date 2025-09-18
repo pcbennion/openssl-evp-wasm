@@ -27,7 +27,6 @@ set(WASM_LINKER_OPTS
     -Wno-pthreads-mem-growth
     -sMODULARIZE=1
     -sEXPORT_ES6=1
-    -sEXPORT_NAME='bind'
     -sSTACK_OVERFLOW_CHECK=1
     -sALLOW_MEMORY_GROWTH=1
     -sDEMANGLE_SUPPORT=1

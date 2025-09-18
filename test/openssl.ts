@@ -42,7 +42,7 @@ interface OpensslWasmBindings {
     pqcAlgorithms: () => string[];
 }
 interface WasmModule {
-    bind: () => Promise<OpensslWasmBindings>;
+    default: () => Promise<OpensslWasmBindings>;
 }
 
 export class OpensslEVP implements IOpensslEVP {
@@ -130,7 +130,7 @@ export class OpensslEVP implements IOpensslEVP {
     }
 
     async initialize(module: WasmModule) {
-        this._bindings = await module.bind();
+        this._bindings = await module.default();
         return this;
     }
 
