@@ -1,4 +1,4 @@
-import { OpensslEVPWorker } from './bundle.js';
+import { OpensslEVPModule } from './bundle.js';
 
 let evp;
 window.onload = async function() {

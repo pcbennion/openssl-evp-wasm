@@ -1,10 +1,11 @@
 const path = require('path');
 
 module.exports = {
-  entry: './opensslWorker.ts',
+  context: path.resolve(__dirname, 'webworker'),
+  entry: './openssl.ts',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public'),
+    path: path.resolve(__dirname, 'webworker/public'),
     library: {
       type: 'module',
     }
@@ -23,7 +24,12 @@ module.exports = {
     rules: [
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: {
+          loader: 'ts-loader',
+          options: {
+            configFile: path.resolve(__dirname, 'tsconfig.webworker.json')
+          }
+        },
         exclude: /node_modules/,
       },
     ],
