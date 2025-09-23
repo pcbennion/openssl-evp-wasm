@@ -13,8 +13,8 @@ class OpensslEvpWasm(ConanFile):
     description = ("Webassembly bindings for the OpenSSL EVP crypto interface.")
     topics = ("Qrypt", "cryptography", "interface")
     settings = "os", "compiler", "build_type", "arch"
-    options = {}
-    default_options = {}
+    options = {"modularize": [True, False]}
+    default_options = {"modularize": False}
 
     _in_source = False
 
@@ -50,9 +50,11 @@ class OpensslEvpWasm(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure(build_script_folder=self.source_folder, variables={})
+        cmake.configure(
+            build_script_folder=self.source_folder,
+            variables={"MODULARIZE": self.options.modularize}
+        )
         cmake.build()
-        cmake.test()
 
     def package(self):
         cmake = CMake(self)

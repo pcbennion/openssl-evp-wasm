@@ -8,17 +8,6 @@ static CipherData getCipherData(std::string algorithm) {
     throw std::invalid_argument("Unsupported cipher");
 }
 
-static std::vector<uint8_t> vectorFromArray(const emscripten::val& arr) {
-    if (arr.isArray() || arr.instanceof(emscripten::val::global("Uint8Array"))) {
-        return emscripten::vecFromJSArray<uint8_t>(arr);
-    }
-    if (arr.instanceof(emscripten::val::global("ArrayBuffer"))) {
-        emscripten::val uint8View = emscripten::val::global("Uint8Array").new_(arr);
-        return emscripten::vecFromJSArray<uint8_t>(uint8View);
-    }
-    return std::vector<uint8_t>();
-}
-
 KeygenOutput keygen(std::string algorithm) {
     const CipherData cipherData = getCipherData(algorithm);
     size_t publicKeyLength = cipherData.publicKeyLength;
@@ -53,7 +42,7 @@ KeygenOutput keygen(std::string algorithm) {
     }
     EVP_PKEY_free(pkey);
 
-    return { emscripten::val::array(publicKey), emscripten::val::array(privateKey) };
+    return { vectorToUint8Array(publicKey), vectorToUint8Array(privateKey) };
 }
 
 EncapOutput encapsulate(std::string algorithm, emscripten::val publicKey) {
@@ -62,7 +51,7 @@ EncapOutput encapsulate(std::string algorithm, emscripten::val publicKey) {
     size_t ciphertextLength = cipherData.ciphertextLength;
     size_t secretLength = cipherData.secretLength;
 
-    std::vector<uint8_t> publicKeyVec = vectorFromArray(publicKey);
+    std::vector<uint8_t> publicKeyVec = uint8ArrayToVector(publicKey);
     if (publicKeyVec.size() != publicKeyLength) {
         throw std::invalid_argument("Invalid public key length");
     }
@@ -95,7 +84,7 @@ EncapOutput encapsulate(std::string algorithm, emscripten::val publicKey) {
 
     ciphertext.resize(ctLen);
     sharedSecret.resize(ssLen);
-    return { emscripten::val::array(ciphertext), emscripten::val::array(sharedSecret) };
+    return { vectorToUint8Array(ciphertext), vectorToUint8Array(sharedSecret) };
 }
 
 emscripten::val decapsulate(std::string algorithm, emscripten::val privateKey, emscripten::val ciphertext) {
@@ -104,11 +93,11 @@ emscripten::val decapsulate(std::string algorithm, emscripten::val privateKey, e
     size_t ciphertextLength = cipherData.ciphertextLength;
     size_t secretLength = cipherData.secretLength;
 
-    std::vector<uint8_t> privateKeyVec = vectorFromArray(privateKey);
+    std::vector<uint8_t> privateKeyVec = uint8ArrayToVector(privateKey);
     if (privateKeyVec.size() != privateKeyLength) {
         throw std::invalid_argument("Invalid private key length");
     }
-    std::vector<uint8_t> ciphertextVec = vectorFromArray(ciphertext);
+    std::vector<uint8_t> ciphertextVec = uint8ArrayToVector(ciphertext);
     if (ciphertextVec.size() != ciphertextLength) {
         throw std::invalid_argument("Invalid ciphertext length");
     }
@@ -138,7 +127,7 @@ emscripten::val decapsulate(std::string algorithm, emscripten::val privateKey, e
     EVP_PKEY_CTX_free(ctx);
 
     sharedSecret.resize(ssLen);
-    return emscripten::val::array(sharedSecret);
+    return vectorToUint8Array(sharedSecret);
 }
 
 emscripten::val algorithms() {

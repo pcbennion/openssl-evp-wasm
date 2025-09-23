@@ -41,11 +41,11 @@ interface OpensslWasmBindings {
     pqcDecapsulate: (algorithm: string, privateKey: Uint8Array, ciphertext: Uint8Array) => Uint8Array;
     pqcAlgorithms: () => string[];
 }
-interface WasmModule {
+interface ES6Module {
     default: () => Promise<OpensslWasmBindings>;
 }
 
-export class OpensslEVP implements IOpensslEVP {
+export class OpensslEVPModule implements IOpensslEVP {
     private _bindings: OpensslWasmBindings | undefined;
     private get bindings(): OpensslWasmBindings {
         if (!this._bindings) {
@@ -129,7 +129,7 @@ export class OpensslEVP implements IOpensslEVP {
         };
     }
 
-    async initialize(module: WasmModule) {
+    async initialize(module: ES6Module) {
         this._bindings = await module.default();
         return this;
     }

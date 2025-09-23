@@ -1,16 +1,23 @@
 const path = require('path');
 
 module.exports = {
-  entry: './openssl.ts',
+  entry: './opensslWorker.ts',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
-    library: 'OpensslEVP',
-    libraryTarget: 'window',
-    libraryExport: 'OpensslEVP'
+    library: {
+      type: 'module',
+    }
   },
   resolve: {
     extensions: ['.ts', '.js'],
+  },
+  experiments: {
+    outputModule: true,
+    asyncWebAssembly: true,
+  },
+  externals: {
+    'openssl_wasm': 'Module'
   },
   module: {
     rules: [
@@ -21,5 +28,5 @@ module.exports = {
       },
     ],
   },
-  mode: 'development',
+  mode: 'production',
 };

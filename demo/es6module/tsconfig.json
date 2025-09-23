@@ -8,5 +8,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["openssl.ts"]
+  "include": ["openssl.ts", "worker.ts" ],
 }
