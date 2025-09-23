@@ -23,18 +23,6 @@ export interface IOpensslEVP {
     };
 }
 
-interface OpensslWasmBindings {
-    generateRandomBytes: (numBytes: number) => Uint8Array;
-    symmetricKeygen: (algorithm: string) => Uint8Array;
-    symmetricEncrypt: (algorithm: string, args: SymmetricCipherArgs, plaintext: Uint8Array) => { ciphertext: Uint8Array; tag?: Uint8Array };
-    symmetricDecrypt: (algorithm: string, args: SymmetricCipherArgs, ciphertext: Uint8Array) => Uint8Array;
-    symmetricAlgorithms: () => string[];
-    pqcKeygen: (algorithm: string) => { publicKey: Uint8Array; privateKey: Uint8Array };
-    pqcEncapsulate: (algorithm: string, publicKey: Uint8Array) => { ciphertext: Uint8Array; sharedSecret: Uint8Array };
-    pqcDecapsulate: (algorithm: string, privateKey: Uint8Array, ciphertext: Uint8Array) => Uint8Array;
-    pqcAlgorithms: () => string[];
-}
-
 export class OpensslEVPWorker implements IOpensslEVP {
     private worker: WasmWorker;
     symmetric: IOpensslEVP['symmetric'];
