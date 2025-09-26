@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-enable_testing()
+option(MODULARIZE "Build an ES6 Module" OFF)
 
 project(openssl_wasm_project)
 
@@ -25,8 +25,6 @@ set(WASM_LINKER_OPTS
     -sFETCH
     -03
     -Wno-pthreads-mem-growth
-    -sMODULARIZE=1
-    -sEXPORT_ES6=1
     -sSTACK_OVERFLOW_CHECK=1
     -sALLOW_MEMORY_GROWTH=1
     -sDEMANGLE_SUPPORT=1
@@ -39,6 +37,14 @@ set(WASM_LINKER_OPTS
     -sNO_DISABLE_EXCEPTION_CATCHING
     -v
 )
+set(DEMO_DEST "webworker")
+if(MODULARIZE)
+    list(APPEND WASM_LINKER_OPTS
+        -sMODULARIZE=1
+        -sEXPORT_ES6=1
+    )
+    set(DEMO_DEST "es6module")
+endif()
 
 target_link_options(${WASM_TARGET} PRIVATE ${WASM_LINKER_OPTS})
 
@@ -46,12 +52,12 @@ add_custom_command(
     TARGET  ${WASM_TARGET}  POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${WASM_TARGET}.js
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/public/${WASM_TARGET}.js)
+            ${CMAKE_CURRENT_SOURCE_DIR}/demo/${DEMO_DEST}/public/${WASM_TARGET}.js)
 add_custom_command(
     TARGET  ${WASM_TARGET}  POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${WASM_TARGET}.wasm
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/public/${WASM_TARGET}.wasm)
+            ${CMAKE_CURRENT_SOURCE_DIR}/demo/${DEMO_DEST}/public/${WASM_TARGET}.wasm)
 
 install(FILES
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${WASM_TARGET}.js

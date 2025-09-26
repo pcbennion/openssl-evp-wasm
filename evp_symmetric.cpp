@@ -8,17 +8,6 @@ static CipherData getCipherData(std::string algorithm) {
     throw std::invalid_argument("Unsupported cipher");
 }
 
-static std::vector<uint8_t> vectorFromArray(const emscripten::val& arr) {
-    if (arr.isArray() || arr.instanceof(emscripten::val::global("Uint8Array"))) {
-        return emscripten::vecFromJSArray<uint8_t>(arr);
-    }
-    if (arr.instanceof(emscripten::val::global("ArrayBuffer"))) {
-        emscripten::val uint8View = emscripten::val::global("Uint8Array").new_(arr);
-        return emscripten::vecFromJSArray<uint8_t>(uint8View);
-    }
-    return std::vector<uint8_t>();
-}
-
 emscripten::val keygen(std::string algorithm) {
     const EVP_CIPHER* cipher = EVP_get_cipherbyname(algorithm.c_str());
     size_t keyLength = getCipherData(algorithm).keyLength;
@@ -26,7 +15,7 @@ emscripten::val keygen(std::string algorithm) {
     if (RAND_bytes(key.data(), keyLength) != 1) {
         throw std::runtime_error("Failed to generate random symmetric key");
     }
-    return emscripten::val::array(key);
+    return vectorToUint8Array(key);
 }
 
 CipherOutput encrypt(std::string algorithm, const CipherArgs& args, emscripten::val plaintext) {
@@ -34,19 +23,19 @@ CipherOutput encrypt(std::string algorithm, const CipherArgs& args, emscripten::
     if (!evpCipher) throw std::invalid_argument("Unknown cipher algorithm");
     const CipherData cipherData = getCipherData(algorithm);
 
-    std::vector<uint8_t> plaintextVec = vectorFromArray(plaintext);
+    std::vector<uint8_t> plaintextVec = uint8ArrayToVector(plaintext);
     if (plaintextVec.empty()) {
         throw std::invalid_argument("Empty or invalid plaintext");
     }
-    std::vector<uint8_t> keyVec = vectorFromArray(args.key);
+    std::vector<uint8_t> keyVec = uint8ArrayToVector(args.key);
     if (keyVec.size() != cipherData.keyLength) {
         throw std::invalid_argument("Invalid key length");
     }
-    std::vector<uint8_t> ivVec = vectorFromArray(args.iv);
+    std::vector<uint8_t> ivVec = uint8ArrayToVector(args.iv);
     if (ivVec.size() != cipherData.ivLength) {
         throw std::invalid_argument("Invalid IV length");
     }
-    std::vector<uint8_t> aadVec = vectorFromArray(args.aad);
+    std::vector<uint8_t> aadVec = uint8ArrayToVector(args.aad);
     if ((!args.tag.isUndefined() || !args.tag.isNull()) && cipherData.tagLength > 0) {
         throw std::invalid_argument("Tag should not be provided for encryption");
     }
@@ -79,7 +68,7 @@ CipherOutput encrypt(std::string algorithm, const CipherArgs& args, emscripten::
             throw std::runtime_error("Failed to get authentication tag");
     }
     EVP_CIPHER_CTX_free(ctx);
-    return {emscripten::val::array(ciphertext), emscripten::val::array(tag)};
+    return {vectorToUint8Array(ciphertext), vectorToUint8Array(tag)};
 }
 
 emscripten::val decrypt(std::string algorithm, const CipherArgs& args, emscripten::val ciphertext) {
@@ -87,23 +76,23 @@ emscripten::val decrypt(std::string algorithm, const CipherArgs& args, emscripte
     if (!evpCipher) throw std::invalid_argument("Unknown cipher algorithm");
     const CipherData cipherData = getCipherData(algorithm);
 
-    std::vector<uint8_t> ciphertextVec = vectorFromArray(ciphertext);
+    std::vector<uint8_t> ciphertextVec = uint8ArrayToVector(ciphertext);
     if (ciphertextVec.empty()) {
         throw std::invalid_argument("Empty or invalid ciphertext");
     }
-    std::vector<uint8_t> keyVec = vectorFromArray(args.key);
+    std::vector<uint8_t> keyVec = uint8ArrayToVector(args.key);
     if (keyVec.size() != cipherData.keyLength) {
         throw std::invalid_argument("Invalid key length");
     }
-    std::vector<uint8_t> ivVec = vectorFromArray(args.iv);
+    std::vector<uint8_t> ivVec = uint8ArrayToVector(args.iv);
     if (ivVec.size() != cipherData.ivLength) {
         throw std::invalid_argument("Invalid IV length");
     }
-    std::vector<uint8_t> tagVec = vectorFromArray(args.tag);
+    std::vector<uint8_t> tagVec = uint8ArrayToVector(args.tag);
     if (tagVec.size() != cipherData.tagLength) {
         throw std::invalid_argument("Invalid tag length");
     }
-    std::vector<uint8_t> aadVec = vectorFromArray(args.aad);
+    std::vector<uint8_t> aadVec = uint8ArrayToVector(args.aad);
     std::vector<uint8_t> plaintext(ciphertextVec.size());
 
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
@@ -133,7 +122,7 @@ emscripten::val decrypt(std::string algorithm, const CipherArgs& args, emscripte
     }
     plaintext.resize(out_len1 + out_len2);
     EVP_CIPHER_CTX_free(ctx);
-    return {emscripten::val::array(plaintext)};
+    return {vectorToUint8Array(plaintext)};
 }
 
 emscripten::val algorithms() {

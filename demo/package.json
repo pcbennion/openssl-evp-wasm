@@ -6,8 +6,10 @@
     "webpack-cli": "^6.0.1"
   },
   "scripts": {
-    "build": "webpack",
-    "start": "serve public"
+    "build": "webpack --config webpack.webworker.config.js",
+    "start": "serve webworker/public",
+    "build-es6": "webpack --config webpack.es6.config.js",
+    "start-es6": "serve es6module/public"
   },
   "devDependencies": {
     "serve": "^14.2.4"

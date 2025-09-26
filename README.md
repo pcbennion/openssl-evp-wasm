@@ -4,7 +4,7 @@ This project provides Webassembly bindings for OpenSSL's EVP interface powered b
 
 These binding are intended to be used by web apps without easy access to cryptographic libraries outside of webcrypto. In particular, they allow web apps to generate the ML-KEM PQC keys made available starting in OpenSSL 3.5+, which are not yet available in webcrypto.
 
-The WASM module is compiled as an ES6 module, which may break compatibility with legacy browsers.
+The WASM bindings default to a webworker implementation for broad compatibility with strict Content Security Policies. They may also be built as an ES6 module for direct calls, but that implementation may be blocked by several common `script-src` CSPs.
 
 ## Prerequisites
 - A C++ compiler with support for cppstd 17 or higher
@@ -21,15 +21,13 @@ conan build . -pr:h=profiles/emscripten-wasm
 
 The resulting `openssl_wasm.js` and `openssl_wasm.wasm` artifacts can be found under `build/Release`.
 
+#### ES6 Module Option
+Append `-o modularize=True` to the above commands to build the wasm bindings as an ES6 module.
+
 ### Advanced Usage
 The `conanfile.py` recipe can be exported to self-hosted conan indexes for automated build and deployment (ie using `conan create` or using deployer arguments with `conan install`). Supported versions can be found in `conandata.yml`.
 
 ## Usage
-The bindings can be instantiated as follows:
-```javascript
-const wasmModule = await import('./openssl_wasm.js');
-const evp = await wasmModule.default();
-```
 The wasm interface is synchronous and has the following spec:
 ```typescript
 type SymmetricCipherArgs = {
@@ -50,11 +48,16 @@ interface OpensslWasmBindings {
     pqcAlgorithms: () => string[];
 }
 ```
-The `test` directory contains an async typescript wrapper for the bindings and a demonstration webpage for reference purposes. The page is hosted at `localhost:3000` and can be deployed as follows:
+The `demo` directory contains async typescript wrappers for both types of bindings and a demonstration webpage for reference purposes. The page is hosted at `localhost:3000` and can be deployed as follows:
 ```bash
+cd demo
 npm install
+# Webworker
 npm run build
 npm run start
+# ES6
+npm run build-es6
+npm run start-es6
 ```
 
 ## Capabilities

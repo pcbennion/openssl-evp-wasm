@@ -16,7 +16,7 @@ emscripten::val generateRandomBytes(size_t length) {
     if (RAND_bytes(buffer.data(), length) != 1) {
         throw std::runtime_error("Failed to generate random bytes");
     }
-    return emscripten::val::array(buffer);
+    return vectorToUint8Array(buffer);
 }
 
 EMSCRIPTEN_BINDINGS(openssl_evp_wasm) {

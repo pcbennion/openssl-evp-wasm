@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenSSL EVP WASM Test Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    .row { display: flex; align-items: center; margin-bottom: 1em; }
+    .row label { min-width: 180px; }
+    .row input, .row select, .row textarea { margin-right: 1em; }
+    .output { width: 400px; height: 2em; }
+    .input { width: 200px; }
+    button { margin-right: 1em; }
+    h1 { margin-bottom: 2em; }
+  </style>
+</head>
+<body>
+  <!-- <h1>OpenSSL EVP WASM Test Page</h1> -->
+
+  <!-- Generate Bytes -->
+  <h3>Generate Random Bytes</h3>
+  <div class="row">
+    <label for="gen-len">Length:</label>
+    <input type="number" id="gen-len" class="input" value="32" />
+    <button id="generate-btn">Generate</button>
+    <label for="gen-output">Output:</label>
+    <textarea id="gen-output" class="output" readonly></textarea>
+    <button id="gen-copy-btn">Copy</button>
+  </div>
+
+  <!-- Symmetric EVP -->
+  <h3>Symmetric Encryption/Decryption</h3>
+  <div class="row">
+    <label for="sym-alg">Algorithm:</label>
+    <select id="sym-alg" class="input"></select>
+    <label for="sym-key">Key (Base64):</label>
+    <input type="text" id="sym-key" class="input" />
+    <button id="sym-key-paste-btn">Paste</button>
+    <label for="sym-iv">IV (Base64):</label>
+    <input type="text" id="sym-iv" class="input" />
+    <button id="sym-iv-paste-btn">Paste</button>
+    <label for="sym-aad">AAD (Base64):</label>
+    <input type="text" id="sym-aad" class="input" />
+    <button id="sym-aad-paste-btn">Paste</button>
+  </div>
+  <h4>Encryption</h4>
+  <div class="row">
+    <label for="sym-enc-input">Plaintext:</label>
+    <input type="text" id="sym-enc-input" class="input" />
+    <button id="sym-encrypt-btn">Encrypt</button>
+    <label for="sym-enc-output">Ciphertext:</label>
+    <textarea id="sym-enc-output" class="output" readonly></textarea>
+    <button id="sym-enc-copy-btn">Copy</button>
+    <label for="sym-enc-tag">Tag:</label>
+    <textarea id="sym-enc-tag" class="output" readonly></textarea>
+    <button id="sym-enc-tag-copy-btn">Copy</button>
+  </div>
+  <h4>Decryption</h4>
+  <div class="row">
+    <label for="sym-dec-input">Ciphertext:</label>
+    <input type="text" id="sym-dec-input" class="input" />
+    <button id="sym-dec-paste-btn">Paste</button>
+    <label for="sym-dec-tag">Tag:</label>
+    <input type="text" id="sym-dec-tag" class="input" />
+    <button id="sym-dec-tag-paste-btn">Paste</button>
+    <button id="sym-decrypt-btn">Decrypt</button>
+    <label for="sym-dec-output">Plaintext:</label>
+    <textarea id="sym-dec-output" class="output" readonly></textarea>
+  </div>
+
+  <!-- PQC EVP -->
+  <h3>Post-Quantum Cryptography (PQC) Key Encapsulation</h3>
+  <div class="row">
+    <label for="pqc-alg">Algorithm:</label>
+    <select id="pqc-alg" class="input"></select>
+  </div>
+  <h4>Key Generation</h4>
+  <div class="row">
+    <button id="pqc-keygen-btn">Generate Key Pair</button>
+    <label for="pqc-keygen-pubkey">Public Key:</label>
+    <textarea id="pqc-keygen-pubkey" class="output" readonly></textarea>
+    <button id="pqc-keygen-pubkey-copy-btn">Copy</button>
+    <label for="pqc-keygen-privkey">Private Key:</label>
+    <textarea id="pqc-keygen-privkey" class="output" readonly></textarea>
+    <button id="pqc-keygen-privkey-copy-btn">Copy</button>
+  </div>
+  <h4>Encapsulation</h4>
+  <div class="row">
+    <label for="pqc-encaps-pubkey">Public Key:</label>
+    <input type="text" id="pqc-encaps-pubkey" class="input" />
+    <button id="pqc-encaps-pubkey-paste-btn">Paste</button>
+    <button id="pqc-encaps-btn">Encapsulate</button>
+    <label for="pqc-encaps-ciphertext">Ciphertext:</label>
+    <textarea id="pqc-encaps-ciphertext" class="output" readonly></textarea>
+    <button id="pqc-encaps-ciphertext-copy-btn">Copy</button>
+    <label for="pqc-encaps-secret">Shared Secret:</label>
+    <textarea id="pqc-encaps-secret" class="output" readonly></textarea>
+    <button id="pqc-encaps-secret-copy-btn">Copy</button>
+  </div>
+  <h4>Decapsulation</h4>
+  <div class="row">
+    <label for="pqc-decaps-privkey">Private Key:</label>
+    <input type="text" id="pqc-decaps-privkey" class="input" />
+    <button id="pqc-decaps-privkey-paste-btn">Paste</button>
+    <label for="pqc-decaps-ciphertext">Ciphertext:</label>
+    <input type="text" id="pqc-decaps-ciphertext" class="input" />
+    <button id="pqc-decaps-ciphertext-paste-btn">Paste</button>
+    <button id="pqc-decaps-btn">Decapsulate</button>
+    <label for="pqc-decaps-secret">Shared Secret:</label>
+    <textarea id="pqc-decaps-secret" class="output" readonly></textarea>
+    <button id="pqc-decaps-secret-copy-btn">Copy</button>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

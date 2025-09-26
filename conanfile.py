@@ -7,16 +7,14 @@ from conan.tools.scm import Git
 
 class OpensslEvpWasm(ConanFile):
     name = "openssl-evp-wasm"
-    license = "All Rights Reserved by Qrypt"
-    author = "Qrypt Inc info@qrypt.com"
+    license = "MIT"
+    author = "Peter Bennion pcbennion@gmail.com, Qrypt Inc info@qrypt.com"
     url = "https://github.com/pcbennion/openssl-evp-wasm"
     description = ("Webassembly bindings for the OpenSSL EVP crypto interface.")
-    topics = ("Qrypt", "cryptography", "interface")
+    topics = ("openssl", "webassembly", "cryptography", "interface")
     settings = "os", "compiler", "build_type", "arch"
-    options = {}
-    default_options = {}
-
-    _in_source = False
+    options = {"modularize": [True, False]}
+    default_options = {"modularize": False}
 
     def set_version(self):
         # If no version has been set, set it to the current git branch name
@@ -50,9 +48,11 @@ class OpensslEvpWasm(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure(build_script_folder=self.source_folder, variables={})
+        cmake.configure(
+            build_script_folder=self.source_folder,
+            variables={"MODULARIZE": self.options.modularize}
+        )
         cmake.build()
-        cmake.test()
 
     def package(self):
         cmake = CMake(self)

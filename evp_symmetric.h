@@ -1,11 +1,6 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <map>
-#include <stdexcept>
-#include <openssl/evp.h>
-#include <openssl/rand.h>
-#include <emscripten/val.h>
+#include "evp_wasm.h"
+
 
 namespace evp::symmetric {
 
