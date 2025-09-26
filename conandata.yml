@@ -1,4 +1,4 @@
 sources:
   0.2.0:
     url: "https://github.com/pcbennion/openssl-evp-wasm/archive/refs/tags/v0.2.0.tar.gz"
-    sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    sha256: "6a259b47c094c1d008ad2e499028df8796b44f85811641612c3a04c5fc129a6d"
